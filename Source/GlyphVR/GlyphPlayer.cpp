@@ -2,6 +2,8 @@
 
 
 #include "GlyphPlayer.h"
+#include "Serialization/BufferArchive.h"
+
 
 // Sets default values
 AGlyphPlayer::AGlyphPlayer()
@@ -14,35 +16,163 @@ AGlyphPlayer::AGlyphPlayer()
 void AGlyphPlayer::BeginPlay()
 {
 	Super::BeginPlay();
+	CurrentProcessedGlyph.Init(0, GlyphResolution * GlyphResolution);
+	OnnxGlyphModel = new OnnxModel(ONNXModelFilePath, EOnnxProvider::GPU_DirectML, 0);
+}
+
+FVector AGlyphPlayer::OnControllerDrawingGlyph(FVector const Position)
+{
+	FVector const PointOnPlane =
+        FVector::PointPlaneProject(Position , DrawPlanePoint , DrawPlaneNormal);
+
+	FVector LocalPointOnPlane =  PointOnPlane - DrawPlanePoint;
+	FVector const PlaneR = FVector::CrossProduct(DrawPlaneNormal, FVector::UpVector);
+	FVector const PlaneU = FVector::CrossProduct(DrawPlaneNormal, PlaneR);
+
+	LocalPointOnPlane = FVector(
+        FVector::DotProduct(LocalPointOnPlane, PlaneR),
+        FVector::DotProduct(LocalPointOnPlane, PlaneU),
+        0);
+
+	if(FVector::DistSquared(LastSamplePoint, LocalPointOnPlane) > SampleDistance * SampleDistance)
+	{
+		GlyphRecording.Add(LocalPointOnPlane);
+	}
 	
+	return  PointOnPlane;
+}
+
+void AGlyphPlayer::OnGlyphFinished()
+{
+	ProcessGlyph();
+	
+	if(bShouldClassify) ClassifyGlyph();
+	
+	GlyphRecording.Empty();
+}
+
+void AGlyphPlayer::SaveGlyphsToFile()
+{
+	if(FFileHelper::SaveArrayToFile(SavedProcessedGlyphs, * (ExportFilePath + ExportFileName)))
+	{
+		UE_LOG(LogTemp, Log, TEXT("Successfully saved glyphs to file %s at %s"), *ExportFileName, *ExportFilePath)
+	}
+	else
+	{
+		UE_LOG(LogTemp, Error, TEXT("failed saving glyphs to file %s at %s"), *ExportFileName, *ExportFilePath)
+	}
+}
+
+void AGlyphPlayer::LoadGlyphsFromFile()
+{
+	if(FFileHelper::LoadFileToArray(SavedProcessedGlyphs, *(ExportFilePath + ExportFileName)))
+	{
+		UE_LOG(LogTemp, Log, TEXT("Successfully loaded glyphs from file %s at %s"), *ExportFileName, *ExportFilePath)
+	}
+	else
+	{
+		UE_LOG(LogTemp, Error, TEXT("failed loading glyphs from file %s at %s"), *ExportFileName, *ExportFilePath)
+	}
+}
+
+
+void AGlyphPlayer::SaveCurrentGlyph()
+{
+	SavedProcessedGlyphs.Append(CurrentProcessedGlyph);
+}
+
+void AGlyphPlayer::ProcessGlyph()
+{
+	float XMin = 10000000000, YMin = 100000000000;
+	float XMax = -1000000000, YMax = -1000000000;
+
+	CurrentProcessedGlyph.Init(0, GlyphResolution * GlyphResolution);
+	
+	for (FVector const GlyphP : GlyphRecording)
+	{
+		if(GlyphP.X < XMin) XMin = GlyphP.X;
+		if(GlyphP.Y < YMin) YMin = GlyphP.Y;
+		if(GlyphP.X > XMax) XMax = GlyphP.X;
+		if(GlyphP.Y > YMax) YMax = GlyphP.Y;
+	}
+
+	XMax -= XMin;
+	YMax -= YMin;
+
+	float const XScaleFactor = static_cast<float>(GlyphResolution - 1) / XMax;
+	float const YScaleFactor = static_cast<float>(GlyphResolution - 1) / YMax;
+	
+	for (FVector GlyphP : GlyphRecording)
+	{
+		GlyphP.X -= XMin;
+		GlyphP.Y -= YMin;
+
+		float scaledGlyphX = GlyphP.X * XScaleFactor;
+		float scaledGlyphY = GlyphP.Y * YScaleFactor;
+		
+		int const Index = FMath::RoundToInt(scaledGlyphY) * 32 + FMath::RoundToInt(scaledGlyphX);
+
+		if(Index <= CurrentProcessedGlyph.Num())
+		{
+			CurrentProcessedGlyph[Index] = 1;
+		}
+		else
+		{
+			UE_LOG(LogTemp, Error, TEXT("Glyph point (%f,%f) is bigger than resolution"), scaledGlyphX, scaledGlyphY)
+		}
+	}
+}
+
+void AGlyphPlayer::ClassifyGlyph()
+{
+	TArray<int64> const InputShape = { 1, 32, 32, 1 };
+	TArray<int64> const OutputShape = { 1, 10 };
+
+	TArray<float> input;
+	TArray<float> Output;
+
+	input.Init(0, GlyphResolution * GlyphResolution);
+	Output.Init(0, 10);
+
+	FOnnxTensorInfo const InputShapeTensorInfo =
+        UOnnxUtilityLibrary::constructOnnxTensorInfo("conv2d_input", InputShape, EOnnxTensorDataType::FLOAT);
+	
+	FOnnxTensorInfo const OutputShapeTensorInfo =
+        UOnnxUtilityLibrary::constructOnnxTensorInfo("dense_1", OutputShape, EOnnxTensorDataType::FLOAT);
+
+	for(int i = 0; i <  CurrentProcessedGlyph.Num(); i++)
+	{
+		input[i] = CurrentProcessedGlyph[i];
+	}
+
+	OnnxGlyphModel->bindInput(InputShapeTensorInfo, input.GetData());
+	OnnxGlyphModel->bindOutput(OutputShapeTensorInfo, Output.GetData());
+
+	OnnxGlyphModel->run();
+	
+	int i = 0;
+
+	if(Output[0] > Output[1])
+	{
+		UE_LOG(LogTemp, Log, TEXT("Square"))
+	}
+	else
+	{
+		UE_LOG(LogTemp, Log, TEXT("Triangle"))
+	}
+
 }
 
 // Called every frame
 void AGlyphPlayer::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
 }
 
-void AGlyphPlayer::SetDrawPlane(UPrimitiveComponent* DrawPlane)
+void AGlyphPlayer::SetDrawPlane(FVector const DrawPlaneP, FVector const DrawPlaneN)
 {
-	PlaneP = DrawPlane->GetComponentLocation();
-	PlaneR = DrawPlane->GetRightVector();
-	PlaneU = DrawPlane->GetUpVector();
-	
-}
-
-FVector AGlyphPlayer::OnControllerDrawingGlyph(FVector Position)
-{
-	FVector pointOnPlane =
-		FVector::PointPlaneProject(PlaneP ,PlaneP + PlaneR ,PlaneP + PlaneU);
-
-	//UE_LOG(LogTemp, Log, TEXT("(%f,%f,%f)"), pointOnPlane.X, pointOnPlane.Y, pointOnPlane.Z)
-	//pointOnPlane = FVector(FVector::DotProduct())
-	GlyphRecording.Add(pointOnPlane);
-	return  pointOnPlane;
-
-	
+	DrawPlaneNormal = DrawPlaneN;
+	DrawPlanePoint = DrawPlaneP;
 }
 
 // Called to bind functionality to input
@@ -51,4 +181,3 @@ void AGlyphPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
 }
-
