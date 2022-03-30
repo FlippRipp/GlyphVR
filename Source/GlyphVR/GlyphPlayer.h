@@ -1,12 +1,14 @@
 // Fill out your copyright notice in the Description page of Project Settings.
-
 #pragma once
 
 #include "OnnxModel.h"
-#include "OnnxUtilityLibrary.h"
 #include "CoreMinimal.h"
+
+#include "GlyphDataAsset.h"
 #include "GameFramework/Pawn.h"
 #include "GlyphPlayer.generated.h"
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnGlyphDrawn, UGlyphDataAsset*, GlyphDrawn);
 
 UCLASS()
 class GLYPHVR_API AGlyphPlayer : public APawn
@@ -35,6 +37,12 @@ protected:
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
+	
+	UPROPERTY(EditDefaultsOnly)
+	TArray<UGlyphDataAsset*> Glyphs;
+
+	UPROPERTY(BlueprintAssignable, Category="Glyph")
+	FOnGlyphDrawn OnGlyphDrawn;
 
 	UPROPERTY(EditDefaultsOnly)
 	float SampleDistance = 1;
@@ -53,13 +61,11 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category="Machine Learning")
 	bool bShouldClassify = true;
 	
-	
 	UFUNCTION(BlueprintCallable)
 	void SetDrawPlane(FVector DrawPlaneP, FVector DrawPlaneN);
 	
 	UFUNCTION(BlueprintCallable)
 	void OnGlyphFinished();
-
 	
 	OnnxModel* OnnxGlyphModel;
 
@@ -74,5 +80,4 @@ public:
 
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
-
 };

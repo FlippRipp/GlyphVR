@@ -128,39 +128,39 @@ void AGlyphPlayer::ClassifyGlyph()
 	TArray<int64> const InputShape = { 1, 32, 32, 1 };
 	TArray<int64> const OutputShape = { 1, 10 };
 
-	TArray<float> input;
-	TArray<float> Output;
+	TArray<float> inputs;
+	TArray<float> Outputs;
 
-	input.Init(0, GlyphResolution * GlyphResolution);
-	Output.Init(0, 10);
+	inputs.Init(0, GlyphResolution * GlyphResolution);
+	Outputs.Init(0, 10);
 
 	FOnnxTensorInfo const InputShapeTensorInfo =
         UOnnxUtilityLibrary::constructOnnxTensorInfo("conv2d_input", InputShape, EOnnxTensorDataType::FLOAT);
 	
 	FOnnxTensorInfo const OutputShapeTensorInfo =
         UOnnxUtilityLibrary::constructOnnxTensorInfo("dense_1", OutputShape, EOnnxTensorDataType::FLOAT);
-
+        
 	for(int i = 0; i <  CurrentProcessedGlyph.Num(); i++)
 	{
-		input[i] = CurrentProcessedGlyph[i];
+		inputs[i] = CurrentProcessedGlyph[i];
 	}
 
-	OnnxGlyphModel->bindInput(InputShapeTensorInfo, input.GetData());
-	OnnxGlyphModel->bindOutput(OutputShapeTensorInfo, Output.GetData());
+	OnnxGlyphModel->bindInput(InputShapeTensorInfo, inputs.GetData());
+	OnnxGlyphModel->bindOutput(OutputShapeTensorInfo, Outputs.GetData());
 
 	OnnxGlyphModel->run();
-	
-	int i = 0;
 
-	if(Output[0] > Output[1])
+	int BiggestIndex = 0;
+
+	for(int i = 0; i < Outputs.Num(); i++)
 	{
-		UE_LOG(LogTemp, Log, TEXT("Square"))
-	}
-	else
-	{
-		UE_LOG(LogTemp, Log, TEXT("Triangle"))
+		if(Outputs[i] > Outputs[BiggestIndex]) BiggestIndex = i;
 	}
 
+	if(Glyphs.Num() > BiggestIndex && Glyphs[BiggestIndex])
+	{
+		if(OnGlyphDrawn.IsBound()) OnGlyphDrawn.Broadcast(Glyphs[BiggestIndex]);
+	}
 }
 
 // Called every frame
