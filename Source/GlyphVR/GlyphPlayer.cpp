@@ -3,6 +3,7 @@
 
 #include "GlyphPlayer.h"
 #include "Serialization/BufferArchive.h"
+#include "Glyph.h"
 
 
 // Sets default values
@@ -157,9 +158,14 @@ void AGlyphPlayer::ClassifyGlyph()
 		if(Outputs[i] > Outputs[BiggestIndex]) BiggestIndex = i;
 	}
 
-	if(Glyphs.Num() > BiggestIndex && Glyphs[BiggestIndex])
+
+	if(OnGlyphDrawn.IsBound())
 	{
-		if(OnGlyphDrawn.IsBound()) OnGlyphDrawn.Broadcast(Glyphs[BiggestIndex]);
+		for (int i = 0; i < Glyphs.Num(); i++)
+		{
+			if(Glyphs[i]->GlyphID == static_cast<GlyphEnum>(BiggestIndex))
+				OnGlyphDrawn.Broadcast(Glyphs[BiggestIndex]);
+		}
 	}
 }
 
