@@ -15,7 +15,7 @@ class GLYPHVR_API UGlyphDataAsset : public UPrimaryDataAsset
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	FString GlyphName;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	int GlyphID;
+	GlyphEnum GlyphID;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	TSubclassOf<AGlyph> GlyphActor;
 };
