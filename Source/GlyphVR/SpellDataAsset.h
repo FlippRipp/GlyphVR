@@ -17,7 +17,8 @@ class GLYPHVR_API USpellDataAsset : public UPrimaryDataAsset
 	GENERATED_BODY()
 
 public:
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	TSubclassOf<ASpell> Spell;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	TArray<GlyphEnum> SpellRecipe;
-
 };

@@ -1,15 +1,14 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-
 #include "SPellBookDataAsset.h"
 
 TSubclassOf<ASpell> USPellBookDataAsset::GetSpell(TArray<GlyphEnum> Glyphs)
 {
-	for (USpellDataAsset spell : Spells)
+	for (USpellDataAsset* Spell : Spells)
 	{
-		if(spell.SpellRecipe == Glyphs)
+		if(Spell->SpellRecipe == Glyphs)
 		{
-			return spell.Spell;
+			return Spell->Spell;
 		}
 	}
 	return nullptr;

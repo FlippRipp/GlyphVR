@@ -17,8 +17,10 @@ class GLYPHVR_API USPellBookDataAsset : public UPrimaryDataAsset
 {
 	GENERATED_BODY()
 
+public:
 	UFUNCTION(BlueprintCallable)
 	TSubclassOf<ASpell> GetSpell(TArray<GlyphEnum> Glyphs);
-	TArray<USpellDataAsset> Spells;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	TArray<USpellDataAsset*> Spells;
 
 };

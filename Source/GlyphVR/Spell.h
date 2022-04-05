@@ -3,14 +3,27 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Glyph.h"
 #include "GameFramework/Actor.h"
 #include "Spell.generated.h"
+
+USTRUCT(BlueprintType)
+struct FSimpleSpellInput
+{
+	GENERATED_BODY()
+
+	USceneComponent* MainHandController;
+	USceneComponent* OffHandController;
+	USceneComponent* Head;
+
+	TArray<GlyphEnum> ElementGlyphs;
+};
 
 UCLASS()
 class GLYPHVR_API ASpell : public AActor
 {
 	GENERATED_BODY()
-	
+
 public:	
 	// Sets default values for this actor's properties
 	ASpell();
@@ -23,4 +36,7 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
+	bool HasInitialized = false;
+	UFUNCTION(BlueprintCallable)
+	virtual void InitSpell(FSimpleSpellInput Input);
 };
