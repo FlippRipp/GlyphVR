@@ -3,6 +3,8 @@
 
 #include "Spell.h"
 
+#include "DamageComponent.h"
+
 // Sets default values
 ASpell::ASpell()
 {
@@ -22,8 +24,30 @@ void ASpell::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 }
 
-void ASpell::InitSpell(FSimpleSpellInput Input)
+float ASpell::GetElementsDamageModifier(TArray<GlyphEnum> DamageTypes)
 {
 	
+}
+
+void ASpell::InitSpell(FSimpleSpellInput Input)
+{
+	OnInit.Broadcast(Input.ElementGlyphs);
+}
+
+void ASpell::Damage(AActor* Target, float BaseDamage, TArray<GlyphEnum> DamageTypes)
+{
+	UDamageComponent* TargetDamageComponent;
+	float TotalDamage = BaseDamage;
+	TargetDamageComponent = Cast<UDamageComponent>(Target->GetComponentByClass(TSubclassOf<UDamageComponent>()));
+	if(TargetDamageComponent)
+	{
+		for(GlyphEnum DamageType : DamageTypes)
+		{
+			//TODO Add damage Modifies total damage
+			TotalDamage *= 1;
+		}
+		
+		TargetDamageComponent->Damage(BaseDamage, DamageTypes, GetActorLocation());
+	}
 }
 

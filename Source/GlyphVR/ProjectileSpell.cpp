@@ -13,7 +13,7 @@ void AProjectileSpell ::Tick(float DeltaTime)
 
 	if(MoveResult.bBlockingHit)
 	{
-		  
+		Damage(MoveResult.Actor.Get(), 100, ElementGlyphs);
 	}
 }
 

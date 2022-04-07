@@ -7,15 +7,20 @@
 #include "GameFramework/Actor.h"
 #include "Spell.generated.h"
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnInit, const TArray<GlyphEnum>&, Elements);
+
 USTRUCT(BlueprintType)
 struct FSimpleSpellInput
 {
 	GENERATED_BODY()
 
+	UPROPERTY(BlueprintReadWrite)
 	USceneComponent* MainHandController;
+	UPROPERTY(BlueprintReadWrite)
 	USceneComponent* OffHandController;
+	UPROPERTY(BlueprintReadWrite)
 	USceneComponent* Head;
-
+	UPROPERTY(BlueprintReadWrite)
 	TArray<GlyphEnum> ElementGlyphs;
 };
 
@@ -36,7 +41,14 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
+	float GetElementsDamageModifier(TArray<GlyphEnum> DamageTypes);
+
 	bool HasInitialized = false;
 	UFUNCTION(BlueprintCallable)
 	virtual void InitSpell(FSimpleSpellInput Input);
+
+	UPROPERTY(BlueprintAssignable)
+	FOnInit OnInit;
+
+	virtual void Damage(AActor* Target, float BaseDamage, TArray<GlyphEnum> DamageTypes);
 };
