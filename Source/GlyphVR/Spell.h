@@ -4,16 +4,19 @@
 
 #include "CoreMinimal.h"
 #include "Glyph.h"
+#include "GlyphPlayer.h"
 #include "GameFramework/Actor.h"
 #include "Spell.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnInit, const TArray<GlyphEnum>&, Elements);
 
 USTRUCT(BlueprintType)
-struct FSimpleSpellInput
+struct FSpellInput
 {
 	GENERATED_BODY()
 
+	UPROPERTY(BlueprintReadWrite)
+	AGlyphPlayer* Player;
 	UPROPERTY(BlueprintReadWrite)
 	USceneComponent* MainHandController;
 	UPROPERTY(BlueprintReadWrite)
@@ -45,7 +48,7 @@ public:
 
 	bool HasInitialized = false;
 	UFUNCTION(BlueprintCallable)
-	virtual void InitSpell(FSimpleSpellInput Input);
+	virtual void InitSpell(FSpellInput Input);
 
 	UPROPERTY(BlueprintAssignable)
 	FOnInit OnInit;

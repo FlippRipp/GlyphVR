@@ -27,6 +27,8 @@ protected:
 	void ProcessGlyph();
 	void ClassifyGlyph();
 
+	bool InternalMovementEnabled = true;
+	
 	TArray<uint8> CurrentProcessedGlyph;
 	TArray<uint8> SavedProcessedGlyphs;
 	
@@ -34,12 +36,15 @@ protected:
 	FVector DrawPlaneNormal;
 	FVector LastSamplePoint;
 
-public:	
+	public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
-	
+
+	void SetInternalMovement(bool state);
 	UPROPERTY(EditDefaultsOnly)
 	TArray<UGlyphDataAsset*> Glyphs;
+
+	void MovePlayer(FVector DeltaMove);
 
 	UPROPERTY(BlueprintAssignable, Category="Glyph")
 	FOnGlyphDrawn OnGlyphDrawn;

@@ -22,5 +22,8 @@ public:
 	TSubclassOf<ASpell> GetSpell(TArray<GlyphEnum> Glyphs);
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	TArray<USpellDataAsset*> Spells;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	TArray<USpellDataAsset*> ComplexSpells;
+
 
 };

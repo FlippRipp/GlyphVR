@@ -26,10 +26,10 @@ void ASpell::Tick(float DeltaTime)
 
 float ASpell::GetElementsDamageModifier(TArray<GlyphEnum> DamageTypes)
 {
-	
+	return 1;
 }
 
-void ASpell::InitSpell(FSimpleSpellInput Input)
+void ASpell::InitSpell(FSpellInput Input)
 {
 	OnInit.Broadcast(Input.ElementGlyphs);
 }

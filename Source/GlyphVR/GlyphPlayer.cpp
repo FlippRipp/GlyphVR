@@ -2,6 +2,9 @@
 
 
 #include "GlyphPlayer.h"
+
+#include <ios>
+
 #include "Serialization/BufferArchive.h"
 #include "Glyph.h"
 
@@ -173,6 +176,33 @@ void AGlyphPlayer::ClassifyGlyph()
 void AGlyphPlayer::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+}
+
+void AGlyphPlayer::SetInternalMovement(bool State)
+{
+	InternalMovementEnabled = State;
+}
+
+void AGlyphPlayer::MovePlayer(FVector DeltaMove)
+{
+	FHitResult MoveResult;
+	int Iteration = 0;
+
+	while (!DeltaMove.IsNearlyZero() && Iteration < 5)
+	{
+		AddActorLocalOffset(DeltaMove, true, &MoveResult);
+		DeltaMove -= DeltaMove * MoveResult.Time;
+
+		if(!MoveResult.bBlockingHit) break;
+
+		if(MoveResult.bStartPenetrating)
+		{
+			AddActorLocalOffset(MoveResult.Normal * MoveResult.PenetrationDepth);
+		}
+
+		DeltaMove -= FVector::DotProduct(DeltaMove, MoveResult.Normal) * DeltaMove;
+		Iteration++;
+	}
 }
 
 void AGlyphPlayer::SetDrawPlane(FVector const DrawPlaneP, FVector const DrawPlaneN)

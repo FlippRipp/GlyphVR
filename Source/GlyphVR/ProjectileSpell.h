@@ -20,7 +20,7 @@ public:
 	
 	
 	virtual void Tick(float DeltaTime) override;
-	virtual void InitSpell(FSimpleSpellInput Input) override;
+	virtual void InitSpell(FSpellInput Input) override;
 	UPROPERTY(EditAnywhere)
 	float Speed = 1000;
 	

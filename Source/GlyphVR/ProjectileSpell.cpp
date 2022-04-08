@@ -17,8 +17,9 @@ void AProjectileSpell ::Tick(float DeltaTime)
 	}
 }
 
-void AProjectileSpell::InitSpell(FSimpleSpellInput Input)
+void AProjectileSpell::InitSpell(FSpellInput Input)
 {
+	Super::InitSpell(Input);
 	if(Input.MainHandController != nullptr)
 	{
 		CastingController = Input.MainHandController;	
