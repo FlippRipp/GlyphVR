@@ -205,6 +205,29 @@ void AGlyphPlayer::MovePlayer(FVector DeltaMove)
 	}
 }
 
+void AGlyphPlayer::PlayerBaseMovement(float DeltaTime)
+{
+	if(!InternalMovementEnabled) return;
+
+	Velocity += MovementInput * MovementSpeed * DeltaTime;
+	if(!bIsGrounded)
+	{
+		Velocity += FVector::UpVector * GravityForce * DeltaTime;
+	}
+	
+	MovePlayer(Velocity * DeltaTime);
+}
+
+void AGlyphPlayer::SetForwardMovementInput(float Forward)
+{
+	MovementInput.X = Forward;
+}
+
+void AGlyphPlayer::SetRightMovementInput(float Right)
+{
+	MovementInput.Y = Right;
+}
+
 void AGlyphPlayer::SetDrawPlane(FVector const DrawPlaneP, FVector const DrawPlaneN)
 {
 	DrawPlaneNormal = DrawPlaneN;

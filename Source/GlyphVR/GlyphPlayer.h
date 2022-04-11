@@ -45,14 +45,23 @@ protected:
 	TArray<UGlyphDataAsset*> Glyphs;
 
 	void MovePlayer(FVector DeltaMove);
+	
+	void PlayerBaseMovement(float DeltaTime);
+
+	void SetForwardMovementInput(float Forward);
+	void SetRightMovementInput(float Right);
+
+	FVector MovementInput;
+	FVector Velocity;
+	bool bIsGrounded;
 
 	UPROPERTY(BlueprintAssignable, Category="Glyph")
 	FOnGlyphDrawn OnGlyphDrawn;
 
-	UPROPERTY(EditDefaultsOnly)
+	UPROPERTY(EditDefaultsOnly, Category="Glyph")
 	float SampleDistance = 1;
 	
-	UPROPERTY(EditDefaultsOnly)
+	UPROPERTY(EditDefaultsOnly, Category="Glyph")
 	int GlyphResolution = 32;
 	
 	UPROPERTY(EditDefaultsOnly, Category="Machine Learning")
@@ -65,7 +74,11 @@ protected:
 	
 	UPROPERTY(EditDefaultsOnly, Category="Machine Learning")
 	bool bShouldClassify = true;
-	
+
+	UPROPERTY(EditDefaultsOnly, Category="Movement")
+	float GravityForce = -980;
+	UPROPERTY(EditDefaultsOnly, Category="Movement")
+	float MovementSpeed = 300;
 	UFUNCTION(BlueprintCallable)
 	void SetDrawPlane(FVector DrawPlaneP, FVector DrawPlaneN);
 	
