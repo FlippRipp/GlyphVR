@@ -32,6 +32,7 @@ float ASpell::GetElementsDamageModifier(TArray<GlyphEnum> DamageTypes)
 void ASpell::InitSpell(FSpellInput Input)
 {
 	OnInit.Broadcast(Input.ElementGlyphs);
+	HasInitialized = true;
 }
 
 void ASpell::Damage(AActor* Target, float BaseDamage, TArray<GlyphEnum> DamageTypes)

@@ -7,7 +7,7 @@ void AProjectileSpell ::Tick(float DeltaTime)
 {
 	if(!HasInitialized) return;
 	Super::Tick(DeltaTime);
-	FVector VelocityDelta = CastingController->GetForwardVector() * Speed * DeltaTime;
+	FVector VelocityDelta = CastingController->GetRightVector() * Speed * DeltaTime;
 	FHitResult MoveResult;
 	AddActorLocalOffset(VelocityDelta, true, &MoveResult);
 

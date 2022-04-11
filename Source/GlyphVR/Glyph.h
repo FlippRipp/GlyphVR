@@ -21,7 +21,9 @@ enum class GlyphEnum : uint8
 	Beam UMETA(DisplayName = "Beam"),				//ark 7
 	Projectile UMETA(DisplayName = "Projectile"),	//Mol 8
 	Buff UMETA(DisplayName = "Buff"),				//kas 9
-	Shield UMETA(DisplayName = "Shield")			//Bir 10
+	Shield UMETA(DisplayName = "Shield"),			//Bir 10
+
+	Default UMETA(DisplayName = "Default")			//Bir 10
 };
 
 UENUM(Blueprintable)

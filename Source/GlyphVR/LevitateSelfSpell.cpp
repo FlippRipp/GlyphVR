@@ -5,7 +5,7 @@
 
 void ALevitateSelfSpell::MovePlayer(float DeltaTime)
 {
-	FVector ControllerDifference = Controller->GetComponentLocation() - ControllerStartPos; 
+	FVector ControllerDifference = Controller->GetRelativeLocation() - ControllerStartPos; 
 	FVector DeltaMove = (ControllerDifference * Sensitivity).GetClampedToSize(0, MaxSpeed) * DeltaTime;
 	Player->MovePlayer(DeltaMove);
 }
@@ -31,7 +31,8 @@ void ALevitateSelfSpell::InitSpell(FSpellInput Input)
 	Super::InitSpell(Input);
 	Player = Input.Player;
 	Controller = Input.MainHandController;
-	Player->SetInternalMovement(false);
+	if(Player != nullptr)
+		Player->SetInternalMovement(false);
 	LevitationTimer = 0;
-	ControllerStartPos = Controller->GetComponentLocation();
+	ControllerStartPos = Controller->GetRelativeLocation();
 }
