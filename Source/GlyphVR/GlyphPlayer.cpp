@@ -176,6 +176,7 @@ void AGlyphPlayer::ClassifyGlyph()
 void AGlyphPlayer::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+	//PlayerBaseMovement(DeltaTime);
 }
 
 void AGlyphPlayer::SetInternalMovement(bool State)
