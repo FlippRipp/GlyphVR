@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "Glyph.h"
 #include "GlyphPlayer.h"
+#include "SpellEffect.h"
 #include "GameFramework/Actor.h"
 #include "Spell.generated.h"
 
@@ -52,6 +53,11 @@ public:
 
 	UPROPERTY(BlueprintAssignable)
 	FOnInit OnInit;
+	UPROPERTY(EditAnywhere)
+	TMap<GlyphEnum, TSubclassOf<ASpellEffect>> SPellEffectMap;
+
+	UFUNCTION(BlueprintImplementableEvent)
+	void OnImpact(FVector ImpactPoint);
 
 	virtual void Damage(AActor* Target, float BaseDamage, TArray<GlyphEnum> DamageTypes);
 };

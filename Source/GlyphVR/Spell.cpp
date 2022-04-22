@@ -44,10 +44,26 @@ void ASpell::Damage(AActor* Target, float BaseDamage, TArray<GlyphEnum> DamageTy
 	{
 		for(GlyphEnum DamageType : DamageTypes)
 		{
-			//TODO Add damage Modifies total damage
-			TotalDamage *= 1;
+			switch (DamageType)
+			{
+			case GlyphEnum::Air:
+				TotalDamage *= 0.5;
+				break;
+			case  GlyphEnum::Fire:
+				TotalDamage *= 2;
+				break;
+			case GlyphEnum::Earth:
+				TotalDamage *= 1.2;
+				break;
+			case GlyphEnum::Water:
+				TotalDamage *= 0.8;
+				break;
+			}
+			TSubclassOf<ASpellEffect> Effect = *SPellEffectMap.Find(DamageType);
+			
+			ASpellEffect* EffectActor = GetWorld()->SpawnActor<ASpellEffect>(Effect);
+			EffectActor->SetActorLocation(GetActorLocation());
 		}
-		
 		TargetDamageComponent->Damage(BaseDamage, DamageTypes, GetActorLocation());
 	}
 }
