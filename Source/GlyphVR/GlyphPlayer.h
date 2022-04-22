@@ -36,9 +36,11 @@ protected:
 	FVector DrawPlaneNormal;
 	FVector LastSamplePoint;
 
+
 	public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
+	
 
 	void SetInternalMovement(bool state);
 	UPROPERTY(EditDefaultsOnly)
