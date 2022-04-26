@@ -51,18 +51,16 @@ void ASpell::Damage(AActor* Target, float BaseDamage, TArray<GlyphEnum> DamageTy
 				break;
 			case  GlyphEnum::Fire:
 				TotalDamage *= 2;
+				TargetDamageComponent->SetIsBurning(true);
 				break;
 			case GlyphEnum::Earth:
 				TotalDamage *= 1.2;
 				break;
 			case GlyphEnum::Water:
 				TotalDamage *= 0.8;
+				TargetDamageComponent->SetIsDoused(true);
 				break;
 			}
-			TSubclassOf<ASpellEffect> Effect = *SPellEffectMap.Find(DamageType);
-			
-			ASpellEffect* EffectActor = GetWorld()->SpawnActor<ASpellEffect>(Effect);
-			EffectActor->SetActorLocation(GetActorLocation());
 		}
 		TargetDamageComponent->Damage(BaseDamage, DamageTypes, GetActorLocation());
 	}

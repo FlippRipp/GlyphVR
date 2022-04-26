@@ -13,6 +13,20 @@ void AProjectileSpell ::Tick(float DeltaTime)
 
 	if(MoveResult.bBlockingHit)
 	{
+		TArray<TSubclassOf<ASpellEffect>> SpellEffects;
+		
+		for(GlyphEnum Glyph : ElementGlyphs)
+		{
+			TSubclassOf<ASpellEffect> SpellEffect = *SpellEffectMap.Find(Glyph);
+			
+			if(SpellEffect != nullptr)
+			{
+				SpellEffects.Add(SpellEffect);
+			}
+		}
+		
+		FVector ImpactDirection = (MoveResult.ImpactPoint - GetActorLocation()).GetSafeNormal(); 
+		OnImpact.Broadcast(MoveResult.ImpactPoint, ImpactDirection, ElementGlyphs, SpellEffects, MoveResult.Actor.Get());
 		Damage(MoveResult.Actor.Get(), 100, ElementGlyphs);
 	}
 }
@@ -29,5 +43,6 @@ void AProjectileSpell::InitSpell(FSpellInput Input)
 	{
 		ElementGlyphs = Input.ElementGlyphs;
 	}
+	
 	HasInitialized = true;
 }

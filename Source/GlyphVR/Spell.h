@@ -10,6 +10,8 @@
 #include "Spell.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnInit, const TArray<GlyphEnum>&, Elements);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_FiveParams(FOnImpact, FVector, ImpactPoint, FVector, ImpactDirection,
+	const TArray<GlyphEnum>&, Elements, const TArray<TSubclassOf<ASpellEffect>>&, VFX, AActor*, Target);
 
 USTRUCT(BlueprintType)
 struct FSpellInput
@@ -54,10 +56,10 @@ public:
 	UPROPERTY(BlueprintAssignable)
 	FOnInit OnInit;
 	UPROPERTY(EditAnywhere)
-	TMap<GlyphEnum, TSubclassOf<ASpellEffect>> SPellEffectMap;
+	TMap<GlyphEnum, TSubclassOf<ASpellEffect>> SpellEffectMap;
 
-	UFUNCTION(BlueprintImplementableEvent)
-	void OnImpact(FVector ImpactPoint);
+	UPROPERTY(BlueprintAssignable)
+	FOnImpact OnImpact;
 
 	virtual void Damage(AActor* Target, float BaseDamage, TArray<GlyphEnum> DamageTypes);
 };

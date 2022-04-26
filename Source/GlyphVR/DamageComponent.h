@@ -23,6 +23,30 @@ public:
 
 	UPROPERTY(EditAnywhere)
 	float HitPoints = 100;
+	UPROPERTY(EditAnywhere)
+	float BurnTime = 5;
+	UPROPERTY(EditAnywhere)
+	float DousedTime = 5;
+	UPROPERTY(EditAnywhere)
+	float BurnDamage = 10;
+
+
+	bool IsBurning = false;
+	bool IsDoused = false;
+
+	void SetIsBurning(bool state);
+	void SetIsDoused(bool state);
+
+	UFUNCTION(BlueprintImplementableEvent)
+	void OnIsBurningChanged(bool state);
+	UFUNCTION(BlueprintImplementableEvent)
+	void OnIsDousedChanged(bool state);
+
+	
+	float IsBurningTimer;
+	float IsDousedTimer;
+	
+	void StatusEffectUpdate(float DeltaTime);
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;

@@ -18,6 +18,50 @@ void UDamageComponent::Damage(float Damage, TArray<GlyphEnum> DamageTypes, FVect
 	if(OnDamage.IsBound()) OnDamage.Broadcast(Damage, DamageTypes, ImpactPoint);
 }
 
+void UDamageComponent::SetIsBurning(bool State)
+{
+	IsBurning = State;
+	IsBurningTimer = 0;
+	if(State)
+	{
+		SetIsDoused(false);
+		IsBurningTimer = BurnTime / 2;
+	}
+	OnIsBurningChanged(State);
+}
+
+void UDamageComponent::SetIsDoused(bool State)
+{
+	IsDoused = State;
+	IsDousedTimer = 0;
+	if(State)
+	{
+		SetIsBurning(false);
+	}
+	OnIsDousedChanged(State);
+}
+
+void UDamageComponent::StatusEffectUpdate(float DeltaTime)
+{
+	if(IsBurning)
+	{
+		IsBurningTimer += DeltaTime;
+		HitPoints -= BurnDamage * DeltaTime;
+		if(BurnTime < IsBurningTimer)
+		{
+			IsBurning = false;
+		}
+	}
+	if(IsDoused)
+	{
+		IsDousedTimer += DeltaTime;
+		if(IsDousedTimer > DousedTime)
+		{
+			IsDoused = false;
+		}
+	}
+}
+
 // Called when the game starts
 void UDamageComponent::BeginPlay()
 {
@@ -32,6 +76,7 @@ void UDamageComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
+	StatusEffectUpdate(DeltaTime);
 	// ...
 }
 
