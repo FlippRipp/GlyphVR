@@ -58,6 +58,8 @@ public:
 	UPROPERTY(EditAnywhere)
 	TMap<GlyphEnum, TSubclassOf<ASpellEffect>> SpellEffectMap;
 
+	TArray<TSubclassOf<ASpellEffect>> GetSpellEffects(TArray<GlyphEnum> DamageTypes);
+
 	UPROPERTY(BlueprintAssignable)
 	FOnImpact OnImpact;
 

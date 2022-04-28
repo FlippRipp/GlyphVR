@@ -35,6 +35,22 @@ void ASpell::InitSpell(FSpellInput Input)
 	HasInitialized = true;
 }
 
+TArray<TSubclassOf<ASpellEffect>> ASpell::GetSpellEffects(TArray<GlyphEnum> ElementGlyphs)
+{
+	TArray<TSubclassOf<ASpellEffect>> SpellEffects;
+		
+	for(GlyphEnum Glyph : ElementGlyphs)
+	{
+		TSubclassOf<ASpellEffect> SpellEffect = *SpellEffectMap.Find(Glyph);
+			
+		if(SpellEffect != nullptr)
+		{
+			SpellEffects.Add(SpellEffect);
+		}
+	}
+	return SpellEffects;
+}
+
 void ASpell::Damage(AActor* Target, float BaseDamage, TArray<GlyphEnum> DamageTypes)
 {
 	UDamageComponent* TargetDamageComponent;

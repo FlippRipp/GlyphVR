@@ -18,9 +18,16 @@ class GLYPHVR_API ABeamSpell : public ASpell
 public:
 	UPROPERTY(EditAnywhere)
 	float MaxRange = 1000;
+	UPROPERTY(EditAnywhere)
+	float BeamDamage = 40;
+	UPROPERTY(EditAnywhere)
+	TEnumAsByte<ECollisionChannel> TraceChannel;
 
 	TArray<GlyphEnum> ElementGlyphs;
 	USceneComponent* CastingController;
+
+	virtual void Tick(float DeltaTime) override;
+	virtual void InitSpell(FSpellInput Input) override;
 
 	
 };
