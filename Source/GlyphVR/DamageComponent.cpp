@@ -16,6 +16,10 @@ void UDamageComponent::Damage(float Damage, TArray<GlyphEnum> DamageTypes, FVect
 {
 	HitPoints = FMath::Max(HitPoints - Damage, 0.f);
 	if(OnDamage.IsBound()) OnDamage.Broadcast(Damage, DamageTypes, ImpactPoint);
+	if(HitPoints == 0)
+	{
+		GetOwner()->Destroy();
+	}
 }
 
 void UDamageComponent::SetIsBurning(bool State)
@@ -27,7 +31,7 @@ void UDamageComponent::SetIsBurning(bool State)
 		SetIsDoused(false);
 		IsBurningTimer = BurnTime / 2;
 	}
-	OnIsBurningChanged(State);
+	OnIsBurningChanged.Broadcast(State);
 }
 
 void UDamageComponent::SetIsDoused(bool State)
@@ -38,7 +42,7 @@ void UDamageComponent::SetIsDoused(bool State)
 	{
 		SetIsBurning(false);
 	}
-	OnIsDousedChanged(State);
+	OnIsDousedChanged.Broadcast(State);
 }
 
 void UDamageComponent::StatusEffectUpdate(float DeltaTime)
@@ -49,7 +53,7 @@ void UDamageComponent::StatusEffectUpdate(float DeltaTime)
 		HitPoints -= BurnDamage * DeltaTime;
 		if(BurnTime < IsBurningTimer)
 		{
-			IsBurning = false;
+			SetIsBurning(false);
 		}
 	}
 	if(IsDoused)
@@ -57,7 +61,7 @@ void UDamageComponent::StatusEffectUpdate(float DeltaTime)
 		IsDousedTimer += DeltaTime;
 		if(IsDousedTimer > DousedTime)
 		{
-			IsDoused = false;
+			SetIsDoused(false);
 		}
 	}
 }

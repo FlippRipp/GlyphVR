@@ -21,10 +21,14 @@ public:
 	UPROPERTY(EditAnywhere)
 	float BeamDamage = 40;
 	UPROPERTY(EditAnywhere)
+	float BeamDuration = 4;
+	UPROPERTY(EditAnywhere)
 	TEnumAsByte<ECollisionChannel> TraceChannel;
 
 	TArray<GlyphEnum> ElementGlyphs;
 	USceneComponent* CastingController;
+
+	float BeamTimer = 0;
 
 	virtual void Tick(float DeltaTime) override;
 	virtual void InitSpell(FSpellInput Input) override;

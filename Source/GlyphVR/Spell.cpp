@@ -31,7 +31,7 @@ float ASpell::GetElementsDamageModifier(TArray<GlyphEnum> DamageTypes)
 
 void ASpell::InitSpell(FSpellInput Input)
 {
-	OnInit.Broadcast(Input.ElementGlyphs);
+	OnInit.Broadcast(Input.ElementGlyphs, Input.MainHandController);
 	HasInitialized = true;
 }
 
@@ -55,8 +55,9 @@ void ASpell::Damage(AActor* Target, float BaseDamage, TArray<GlyphEnum> DamageTy
 {
 	UDamageComponent* TargetDamageComponent;
 	float TotalDamage = BaseDamage;
-	TargetDamageComponent = Cast<UDamageComponent>(Target->GetComponentByClass(TSubclassOf<UDamageComponent>()));
-	if(TargetDamageComponent)
+	TargetDamageComponent = Target->FindComponentByClass<UDamageComponent>();
+	
+	if(TargetDamageComponent != nullptr)
 	{
 		for(GlyphEnum DamageType : DamageTypes)
 		{
@@ -81,4 +82,3 @@ void ASpell::Damage(AActor* Target, float BaseDamage, TArray<GlyphEnum> DamageTy
 		TargetDamageComponent->Damage(BaseDamage, DamageTypes, GetActorLocation());
 	}
 }
-

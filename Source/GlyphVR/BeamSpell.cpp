@@ -8,6 +8,10 @@ void ABeamSpell::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 	if(!HasInitialized) return;
 
+	if(BeamTimer > BeamDuration) Destroy();
+
+	BeamTimer += DeltaTime;
+
 	FHitResult TraceResults;
 	FVector TraceStart = CastingController->GetComponentLocation();
 	FVector TraceEnd = TraceStart + CastingController->GetForwardVector() * MaxRange;

@@ -36,12 +36,10 @@ protected:
 	FVector DrawPlaneNormal;
 	FVector LastSamplePoint;
 
-
 	public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 	
-
 	void SetInternalMovement(bool state);
 	UPROPERTY(EditDefaultsOnly)
 	TArray<UGlyphDataAsset*> Glyphs;
@@ -72,7 +70,7 @@ protected:
 	FString ExportFileName;
 	
 	UPROPERTY(EditDefaultsOnly, Category="Machine Learning")
-	FString ONNXModelFilePath;
+	FString ONNXModelFileName;
 	
 	UPROPERTY(EditDefaultsOnly, Category="Machine Learning")
 	bool bShouldClassify = true;

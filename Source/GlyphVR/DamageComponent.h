@@ -7,6 +7,9 @@
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FOnDamage,float, Damage, const TArray<GlyphEnum>&, DamageTypes, FVector, ImpactPoint);
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnBurningChanged, bool, State);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnDousedChanged, bool, State);
+
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class GLYPHVR_API UDamageComponent : public UActorComponent
 {
@@ -37,10 +40,10 @@ public:
 	void SetIsBurning(bool state);
 	void SetIsDoused(bool state);
 
-	UFUNCTION(BlueprintImplementableEvent)
-	void OnIsBurningChanged(bool state);
-	UFUNCTION(BlueprintImplementableEvent)
-	void OnIsDousedChanged(bool state);
+	UPROPERTY(BlueprintAssignable)
+	FOnBurningChanged OnIsBurningChanged;
+	UPROPERTY(BlueprintAssignable)
+	FOnDousedChanged OnIsDousedChanged;
 
 	
 	float IsBurningTimer;

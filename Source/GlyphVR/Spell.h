@@ -9,7 +9,8 @@
 #include "GameFramework/Actor.h"
 #include "Spell.generated.h"
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnInit, const TArray<GlyphEnum>&, Elements);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnInit, const TArray<GlyphEnum>&, Elements, USceneComponent*, Source);
+
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_FiveParams(FOnImpact, FVector, ImpactPoint, FVector, ImpactDirection,
 	const TArray<GlyphEnum>&, Elements, const TArray<TSubclassOf<ASpellEffect>>&, VFX, AActor*, Target);
 

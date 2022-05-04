@@ -1,13 +1,10 @@
 // Fill out your copyright notice in the Description page of Project Settings.
-
-
 #include "GlyphPlayer.h"
 
 #include <ios>
 
 #include "Serialization/BufferArchive.h"
 #include "Glyph.h"
-
 
 // Sets default values
 AGlyphPlayer::AGlyphPlayer()
@@ -21,7 +18,8 @@ void AGlyphPlayer::BeginPlay()
 {
 	Super::BeginPlay();
 	CurrentProcessedGlyph.Init(0, GlyphResolution * GlyphResolution);
-	OnnxGlyphModel = new OnnxModel(ONNXModelFilePath, EOnnxProvider::GPU_DirectML, 0);
+	FString RelativePath =  FPaths::ProjectContentDir();
+	OnnxGlyphModel = new OnnxModel(RelativePath + ONNXModelFileName + ".onnx", EOnnxProvider::CPU, 0);
 }
 
 FVector AGlyphPlayer::OnControllerDrawingGlyph(FVector const Position)

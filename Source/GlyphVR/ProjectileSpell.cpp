@@ -7,7 +7,7 @@ void AProjectileSpell ::Tick(float DeltaTime)
 {
 	if(!HasInitialized) return;
 	Super::Tick(DeltaTime);
-	FVector VelocityDelta = CastingController->GetRightVector() * Speed * DeltaTime;
+	FVector VelocityDelta = CastingController->GetForwardVector() * Speed * DeltaTime;
 	FHitResult MoveResult;
 	AddActorLocalOffset(VelocityDelta, true, &MoveResult);
 
@@ -16,7 +16,11 @@ void AProjectileSpell ::Tick(float DeltaTime)
 		const TArray<TSubclassOf<ASpellEffect>> SpellEffects = GetSpellEffects(ElementGlyphs);
 		const FVector ImpactDirection = (MoveResult.ImpactPoint - GetActorLocation()).GetSafeNormal(); 
 		OnImpact.Broadcast(MoveResult.ImpactPoint, ImpactDirection, ElementGlyphs, SpellEffects, MoveResult.Actor.Get());
+
+		FString ActorName = MoveResult.Actor->GetName();
+		UE_LOG(LogTemp, Log, TEXT("%s"), *ActorName)
 		Damage(MoveResult.Actor.Get(), 100, ElementGlyphs);
+		Destroy();
 	}
 }
 
